@@ -25,4 +25,3 @@ def pascal_triangle(n):
             triangle.insert(i, row)
 
         return triangle
-
