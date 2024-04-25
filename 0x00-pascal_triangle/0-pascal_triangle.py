@@ -11,7 +11,7 @@ def pascal_triangle(n):
     Returns: an empty list if n <= 0
     """
     if n <= 0:
-        return []
+        return [[]]
 
     elif n > 1:
         triangle = [[1]]
