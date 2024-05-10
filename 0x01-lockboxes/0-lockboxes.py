@@ -23,3 +23,4 @@ def canUnlockAll(boxes):
     if 0 in unlocked_box:
         return False
     return True
+
