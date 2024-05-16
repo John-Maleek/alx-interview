@@ -31,7 +31,7 @@ def print_metrics():
     """Prints the collected statistics."""
     global total_file_size, status_codes_count
     print(f"Total file size: {total_file_size}")
-    for code in sorted(status_codes_count):
+    for code in sorted(status_codes_count.keys()):
         if status_codes_count[code] > 0:
             print(f"{code}: {status_codes_count[code]}")
 
@@ -48,8 +48,8 @@ if __name__ == "__main__":
     for line in sys.stdin:
         match = log_pattern.match(line.strip())
         if match:
-            status_code = int(match.group(1))
-            file_size = int(match.group(2))
+            file_size = int(line.split()[-1])
+            status_code = line.split()[-2]
 
             # Update total file size and status code count
             total_file_size += file_size
