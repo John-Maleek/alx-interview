@@ -36,7 +36,7 @@ def print_metrics():
             print(f"{code}: {status_codes_count[code]}")
 
 
-def signal_handler():
+def signal_handler(sig, frame):
     """Handles the keyboard interruption signal to print statistics."""
     print_metrics()
     sys.exit(0)
