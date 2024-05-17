@@ -29,7 +29,7 @@ line_count = 0
 def print_metrics():
     """Prints the collected statistics."""
     global total_file_size, status_codes_count
-    print(f"Total file size: {total_file_size}")
+    print(f"File size: {total_file_size}")
     for code in sorted(status_codes_count.keys()):
         if status_codes_count[code] > 0:
             print(f"{code}: {status_codes_count[code]}")
