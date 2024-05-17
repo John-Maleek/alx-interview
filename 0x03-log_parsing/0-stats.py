@@ -62,10 +62,11 @@ if __name__ == "__main__":
                             status_codes_count[status_code] += 1
 
                     line_count += 1
-
-                    if line_count % 10 == 0:
-                        print_metrics()
                 except BaseException:
                     pass
+
+                if line_count % 10 == 0:
+                    print_metrics()
+        print_metrics()
     except KeyboardInterrupt:
         signal.signal(signal.SIGINT, signal_handler)
