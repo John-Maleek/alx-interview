@@ -69,3 +69,4 @@ if __name__ == "__main__":
         print_metrics()
     except KeyboardInterrupt:
         signal.signal(signal.SIGINT, signal_handler)
+        raise
