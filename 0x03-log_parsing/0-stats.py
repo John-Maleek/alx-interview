@@ -52,8 +52,8 @@ if __name__ == "__main__":
     for line in sys.stdin:
         match = log_pattern.search(line.strip())
         if match:
-            file_size = int(line.split()[-1])
-            status_code = line.split()[-2]
+            file_size = int(match.group(3))
+            status_code = match.group(2)
 
             total_file_size += file_size
             if status_code in status_codes_count:
