@@ -66,6 +66,7 @@ if __name__ == "__main__":
 
                 if line_count % 10 == 0:
                     print_metrics()
+        print_metrics()
     except KeyboardInterrupt:
         signal.signal(signal.SIGINT, signal_handler)
         raise
