@@ -43,7 +43,6 @@ def print_metrics():
 def signal_handler(signum, frame):
     """Handles the keyboard interruption signal to print statistics."""
     print_metrics()
-    sys.exit(0)
 
 
 if __name__ == "__main__":
