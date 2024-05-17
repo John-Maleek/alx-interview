@@ -56,9 +56,8 @@ if __name__ == "__main__":
                     status_code = match.group(2)
 
                     total_file_size += file_size
-                    if status_code in status_codes_count:
-                        if int(status_code):
-                            status_codes_count[status_code] += 1
+                    if status_code in status_codes_count and int(status_code):
+                        status_codes_count[status_code] += 1
 
                     line_count += 1
                 except BaseException:
