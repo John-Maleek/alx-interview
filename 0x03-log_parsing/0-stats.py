@@ -27,7 +27,6 @@ line_count = 0
 
 
 def print_metrics():
-    """prints of the logs"""
     """Prints the collected statistics."""
     global total_file_size, status_codes_count
     print(f"Total file size: {total_file_size}")
@@ -36,7 +35,7 @@ def print_metrics():
             print(f"{code}: {status_codes_count[code]}")
 
 
-def signal_handler(sig, frame):
+def signal_handler(signum, frame):
     """Handles the keyboard interruption signal to print statistics."""
     print_metrics()
     sys.exit(0)
@@ -51,15 +50,12 @@ if __name__ == "__main__":
             file_size = int(line.split()[-1])
             status_code = line.split()[-2]
 
-            # Update total file size and status code count
             total_file_size += file_size
             if status_code in status_codes_count:
-                status_codes_count[status_code] += 1
+                if int(status_code):
+                    status_codes_count[status_code] += 1
 
             line_count += 1
 
-            # Print statistics after every 10 lines
             if line_count % 10 == 0:
                 print_metrics()
-
-    print_metrics()
