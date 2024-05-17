@@ -21,8 +21,8 @@ status_codes_count = {
 }
 total_file_size = 0
 log_pattern = re.compile(
-    r'^((\d{1,3}\.){3}\d{1,3}|([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}) - \[\S+ \S+\] '
-    r'"GET /projects/260 HTTP/1.1" (\d{3}) (\d+)$'
+    r"""^((\d{1,3}\.){3}\d{1,3}|([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}) -
+    \[\S+ \S+\] "GET /projects/260 HTTP/1.1" (\d{3}) (\d+)$"""
 )
 line_count = 0
 
