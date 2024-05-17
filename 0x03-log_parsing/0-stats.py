@@ -1,60 +1,66 @@
 #!/usr/bin/python3
 """
-Module to present log parsing functionality
+module contains a script that reads stdin line by line and computes metrics
 """
-import re
+
+
 import sys
+import signal
+import re
 
 
-def print_stats(stats: dict, total_size: int) -> None:
-    """
-    Prints the statistics of the log file.
+status_codes_count = {
+    "200": 0,
+    "301": 0,
+    "400": 0,
+    "401": 0,
+    "403": 0,
+    "404": 0,
+    "405": 0,
+    "500": 0
+}
+total_file_size = 0
+log_pattern = re.compile(
+    r"^\b(?:\d{1,2}|1\d{2}|2[0-4]\d|25[0-5])\."
+    r"\b(?:\d{1,2}|1\d{2}|2[0-4]\d|25[0-5])\."
+    r"\b(?:\d{1,2}|1\d{2}|2[0-4]\d|25[0-5])\."
+    r"\b(?:\d{1,2}|1\d{2}|2[0-4]\d|25[0-5])\b\s-\s"
+    r"\[(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\.\d{6})\]\s"
+    r"\"GET\s/projects/260\sHTTP\/1\.1\"\s(\d{3})\s(\d+)\s*$"
+)
+line_count = 0
 
-    Arguments:
-        stats (dict[int, int]): A dictionary where the keys are status codes
-            and the values are the number of times that status code was
-            encountered.
-        total_size (int): The total size of each 10 log files.
-    """
-    print("File size: {:d}".format(total_size))
-    for key, value in sorted(stats.items()):
-        if value:
-            print("{}: {}".format(key, value))
+
+def print_metrics():
+    """Prints the collected statistics."""
+    global total_file_size, status_codes_count
+    print("File size: {:d}".format(total_file_size))
+    for code in sorted(status_codes_count.keys()):
+        if status_codes_count[code] > 0:
+            print("{}: {}".format(code, status_codes_count[code]))
+
+
+def signal_handler(signum, frame):
+    """Handles the keyboard interruption signal to print statistics."""
+    print_metrics()
+    sys.exit(0)
 
 
 if __name__ == "__main__":
-    rgx_ex = (
-        r"^\b(?:\d{1,2}|1\d{2}|2[0-4]\d|25[0-5])\."
-        r"\b(?:\d{1,2}|1\d{2}|2[0-4]\d|25[0-5])\."
-        r"\b(?:\d{1,2}|1\d{2}|2[0-4]\d|25[0-5])\."
-        r"\b(?:\d{1,2}|1\d{2}|2[0-4]\d|25[0-5])\b\s-\s"
-        r"\[(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\.\d{6})\]\s"
-        r"\"GET\s/projects/260\sHTTP\/1\.1\"\s(\d{3})\s(\d+)\s*$"
-    )
+    '''Read and process lines from standard input'''
+    signal.signal(signal.SIGINT, signal_handler)
+    for line in sys.stdin:
+        match = log_pattern.search(line.strip())
+        if match:
+            file_size = int(line.split()[-1])
+            status_code = line.split()[-2]
 
-    files_total_size = 0
-    count = 0
-    status_codes = ["200", "301", "400", "401", "403", "404", "405", "500"]
-    stats = {key: 0 for key in status_codes}
+            total_file_size += file_size
+            if status_code in status_codes_count:
+                if int(status_code):
+                    status_codes_count[status_code] += 1
 
-    try:
-        for line in sys.stdin:
-            count += 1
-            rgx_match = re.match(rgx_ex, line)
-            if rgx_match and rgx_match.group(2) in status_codes:
-                try:
-                    stats[rgx_match.group(2)] += 1
-                except BaseException as e:
-                    pass
+            line_count += 1
 
-                try:
-                    files_total_size += int(rgx_match.group(3))
-                except BaseException as e:
-                    pass
-
-                if count % 10 == 0:
-                    print_stats(stats, files_total_size)
-        print_stats(stats, files_total_size)
-    except KeyboardInterrupt:
-        print_stats(stats, files_total_size)
-        raise
+            if line_count % 10 == 0:
+                print_metrics()
