@@ -38,14 +38,13 @@ def print_metrics():
 def signal_handler(signum, frame):
     """Handles the keyboard interruption signal to print statistics."""
     print_metrics()
-    sys.exit(0)
 
 
 if __name__ == "__main__":
     '''Read and process lines from standard input'''
     signal.signal(signal.SIGINT, signal_handler)
     for line in sys.stdin:
-        match = log_pattern.match(line.strip())
+        match = log_pattern.fullmatch(line.strip())
         if match:
             file_size = int(line.split()[-1])
             status_code = line.split()[-2]
