@@ -50,7 +50,7 @@ if __name__ == "__main__":
     '''Read and process lines from standard input'''
     signal.signal(signal.SIGINT, signal_handler)
     for line in sys.stdin:
-        match = log_pattern.search(line.strip())
+        match = re.match(log_pattern, line)
         if match:
             file_size = int(match.group(3))
             status_code = match.group(2)
