@@ -48,19 +48,24 @@ def signal_handler(signum, frame):
 
 if __name__ == "__main__":
     '''Read and process lines from standard input'''
-    signal.signal(signal.SIGINT, signal_handler)
-    for line in sys.stdin:
-        match = re.match(log_pattern, line)
-        if match:
-            file_size = int(match.group(3))
-            status_code = match.group(2)
+    try:
+        for line in sys.stdin:
+            match = re.match(log_pattern, line)
+            if match:
+                try:
+                    file_size = int(match.group(3))
+                    status_code = match.group(2)
 
-            total_file_size += file_size
-            if status_code in status_codes_count:
-                if int(status_code):
-                    status_codes_count[status_code] += 1
+                    total_file_size += file_size
+                    if status_code in status_codes_count:
+                        if int(status_code):
+                            status_codes_count[status_code] += 1
 
-            line_count += 1
+                    line_count += 1
 
-            if line_count % 10 == 0:
-                print_metrics()
+                    if line_count % 10 == 0:
+                        print_metrics()
+                except BaseException:
+                    pass
+    except KeyboardInterrupt:
+        signal.signal(signal.SIGINT, signal_handler)
