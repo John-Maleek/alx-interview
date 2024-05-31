@@ -5,111 +5,125 @@
 """
 
 
-import sys
+from sys import argv
 
 
-def init_board(n):
-    """Initialize an `n`x`n` sized chessboard with 0's."""
-    board = []
-    [board.append([]) for i in range(n)]
-    [row.append(' ') for i in range(n) for row in board]
-    return (board)
+def check_row(board, index, board_len):
+    """ Check if there is a queen in the row """
+    for r in range(board_len):
+        if board[index][r]:
+            return (False)
+
+    return (True)
 
 
-def board_deepcopy(board):
-    """Return a deepcopy of a chessboard."""
-    if isinstance(board, list):
-        return list(map(board_deepcopy, board))
-    return (board)
-
-
-def get_solution(board):
-    """Return the list of lists representation of a solved chessboard."""
-    solution = []
-    for r in range(len(board)):
-        for c in range(len(board)):
-            if board[r][c] == "Q":
-                solution.append([r, c])
-                break
-    return (solution)
-
-
-def xout(board, row, col):
-    """X out spots on a chessboard.
-    """
-    # X out all forward spots
-    for c in range(col + 1, len(board)):
-        board[row][c] = "x"
-    # X out all backwards spots
-    for c in range(col - 1, -1, -1):
-        board[row][c] = "x"
-    # X out all spots below
-    for r in range(row + 1, len(board)):
-        board[r][col] = "x"
-    # X out all spots above
-    for r in range(row - 1, -1, -1):
-        board[r][col] = "x"
-    # X out all spots diagonally down to the right
-    c = col + 1
-    for r in range(row + 1, len(board)):
-        if c >= len(board):
+def check_r_angle(board, row, col, board_len):
+    """ Check if there is a queen in the left angle """
+    c = col
+    for r in range(row, -1, -1):
+        if c >= board_len:
             break
-        board[r][c] = "x"
+        if board[r][c]:
+            return (False)
         c += 1
-    # X out all spots diagonally up to the left
-    c = col - 1
-    for r in range(row - 1, -1, -1):
+
+    c = col
+    for r in range(row, board_len):
         if c < 0:
             break
-        board[r][c]
+        if board[r][c]:
+            return (False)
         c -= 1
-    # X out all spots diagonally up to the right
-    c = col + 1
-    for r in range(row - 1, -1, -1):
-        if c >= len(board):
-            break
-        board[r][c] = "x"
-        c += 1
-    # X out all spots diagonally down to the left
-    c = col - 1
-    for r in range(row + 1, len(board)):
+
+    return (True)
+
+
+def check_l_angle(board, row, col, board_len):
+    """ Check if there is a queen in the right angle """
+    c = col
+    for r in range(row, -1, -1):
         if c < 0:
             break
-        board[r][c] = "x"
+        if board[r][c]:
+            return (False)
         c -= 1
 
+    c = col
+    for r in range(row, board_len):
+        if c >= board_len:
+            break
+        if board[r][c]:
+            return (False)
+        c += 1
 
-def recursive_solve(board, row, queens, solutions):
-    """Recursively solve an N-queens puzzle.
-    """
-    if queens == len(board):
-        solutions.append(get_solution(board))
-        return (solutions)
+    return (True)
 
-    for c in range(len(board)):
-        if board[row][c] == " ":
-            tmp_board = board_deepcopy(board)
-            tmp_board[row][c] = "Q"
-            xout(tmp_board, row, c)
-            solutions = recursive_solve(tmp_board, row + 1,
-                                        queens + 1, solutions)
 
-    return (solutions)
+def chek_all(board, r, c, n):
+    if not check_row(board, r, n):
+        return (False)
+
+    if not check_l_angle(board, r, c, n):
+        return (False)
+
+    return (check_r_angle(board, r, c, n))
+
+
+def main():
+    """ The Main Function """
+
+    argc = len(argv)
+    if argc != 2:
+        print("Usage: nqueens N")
+        exit(1)
+
+    try:
+        n = int(argv[1])
+    except Exception:
+        print("N must be a number")
+        exit(1)
+
+    if n < 4:
+        print("N must be at least 4")
+        exit(1)
+
+    n_range = range(n)
+    i = 0
+    c = 0
+    r = i
+    board = [[0 for _ in n_range] for _ in n_range]
+    result = []
+    while i < n:
+        while (c < n):
+            found = 0
+
+            while (r < n):
+                if chek_all(board, r, c, n):
+                    board[r][c] = 1
+                    result.append([c, r])
+                    found = 1
+                    r = 0
+                    break
+                r += 1
+
+            if not found and len(result):
+                last_i = result.pop()
+                c = last_i[0]
+                r = last_i[1] + 1
+                board[last_i[1]][last_i[0]] = 0
+                continue
+            c += 1
+
+        if len(result):
+            print(result)
+            i = result[0][1]
+            last_i = result.pop()
+            c = last_i[0]
+            r = last_i[1] + 1
+            board[last_i[1]][last_i[0]] = 0
+        else:
+            return
 
 
 if __name__ == "__main__":
-    """Main function"""
-    if len(sys.argv) != 2:
-        print("Usage: nqueens N")
-        sys.exit(1)
-    if sys.argv[1].isdigit() is False:
-        print("N must be a number")
-        sys.exit(1)
-    if int(sys.argv[1]) < 4:
-        print("N must be at least 4")
-        sys.exit(1)
-
-    board = init_board(int(sys.argv[1]))
-    solutions = recursive_solve(board, 0, 0, [])
-    for sol in solutions:
-        print(sol)
+    main()
